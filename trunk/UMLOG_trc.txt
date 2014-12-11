@@ -1,0 +1,30 @@
+Created NDG2D object (no. 1) 
+loading geometry from file Grid/CFD/Volker_374.neu
+umMESH : Bounding Box for 2-D mesh
+         x (  -0.200,    2.000)
+         y (  -0.200,    0.210)
+umMESH : Region  1 has    374 elements, with epsilon =   1.000
+Loading   24 faces with BC Cylinder
+Loading   43 faces with BC Wall
+Loading    9 faces with BC Inflow
+Loading    4 faces with BC Outflow
+*** compacted <double> *** 
+*** compacted <int>    *** 
+taking ownership of CS(PR)...
+*** CS_chol: deleting C...
+*** CS_chol: C deleted.
+*** compacted <double> *** 
+*** compacted <int>    *** 
+taking ownership of CS(VEL)...
+*** CS_chol: deleting C...
+*** CS_chol: C deleted.
+*** compacted <double> *** 
+*** compacted <int>    *** 
+taking ownership of CS(PR)...
+*** CS_chol: deleting C...
+*** CS_chol: C deleted.
+taking ownership of CS(VEL)...
+*** CS_chol: deleting C...
+*** CS_chol: C deleted.
+*** compacted <double> *** 
+*** compacted <int>    *** 

@@ -1,0 +1,116 @@
+// INSPressureSetUp2D.m
+// function [PRperm, PRsystemC, PRsystemCT, rhsbcPR] = ...
+//            INSPressureSetUp2D(dt, nu, BCfunction)
+// by Kevin Chen
+// 2014/11/22
+//---------------------------------------------------------
+#include "NDGLib_headers.h"
+#include "INS2D.h"
+
+
+//---------------------------------------------------------
+void INS2D::INSPressureSetUp2D()
+//---------------------------------------------------------
+{
+  //---------------------------
+  double t1 = timer.read();
+  //---------------------------
+
+  ///////////////////commented out by Kevin Chen///////////////////
+  /*
+  // Note: assumes {m_cub,m_gauss} have been defined
+  Cub2D&   cub = this->m_cub;
+  Gauss2D& gauss = this->m_gauss;
+  */
+  /////////////////////////////////////////////////////////////////
+
+  // function [PRperm, PRsystemC, PRsystemCT, rhsbcPR] = ...
+  //   INSPressureSetUp2D(dt, nu, BCfunction)
+  //
+  // Purpose: build pressure system and boundary forcing term
+
+  CSd *PRsystemBC = new CSd("PRbc");  // NBN: delete before chol()
+  CSd *mm = new CSd("mmP");           // NBN: delete before chol()
+  CSd PRsystem("PR"); IVec ids;       // NBN: passed to chol()
+
+  // save original boundary types
+  saveBCType = BCType;
+
+  // Convert {Out} boundary conditions to Dirichlet
+  ids = find(saveBCType, '=', (int)BC_Out);   BCType(ids) = BC_Dirichlet;
+  
+  // Convert {In,Wall,Cyl} boundary conditions to Neumann
+  ids = find(saveBCType, '=', (int)BC_In );   BCType(ids) = BC_Neuman;
+  ids = find(saveBCType, '=', (int)BC_Wall);  BCType(ids) = BC_Neuman;
+  ids = find(saveBCType, '=', (int)BC_Cyl);   BCType(ids) = BC_Neuman;
+
+  // Check: dumpIMat(BCType, "Pressure BCType");
+  
+  /////////////////////commented out by Kevin Chen ///////////////////////
+  /*
+  // Form inhomogeneous boundary term for rhs data
+  (this->*ExactSolutionBC)(gauss.x, gauss.y, gauss.nx, gauss.ny, 
+             gauss.mapI, gauss.mapO, gauss.mapW, gauss.mapC, 0.0, nu,
+             bcUx, bcUy, bcPR, bcdUndt);
+  */
+  /////////////////////////////////////////////////////////////////////////
+
+  /////////////////////added by Kevin Chen/////////////////////////////////
+  (this->*ExactSolutionBC)(Fx, Fy, nx, ny, mapI, mapO, mapW, mapC, 0.0, nu,
+         bcUx, bcUy, bcPR, bcdUndt);
+  /////////////////////////////////////////////////////////////////////////
+
+  ////////////////////commented out by Kevin Chen//////////////////////////
+  // Build pressure boundary condition forcing vector
+  /*
+  PoissonIPDGbc2D(m_gauss, (*PRsystemBC));
+  refrhsbcPR = (*PRsystemBC) * bcPR;
+  delete PRsystemBC; PRsystemBC=NULL;
+  */
+  /////////////////////////////////////////////////////////////////////////
+
+  //////////////////added by Kevin Chen////////////////////////////////////
+  DVec dpdn_temp("dpdn_temp"); dpdn_temp.initialize(bcPR.size());
+  refrhsbcPR = PoissonIPDGbc2D(bcPR,dpdn_temp);
+
+  /////////////////////////////////////////////////////////////////////////
+  //for debug:
+  // std::cout<<"refrhsbc debug info is: " <<std::endl;
+  // std::cout<<refrhsbcPR(1)<<std::endl;
+  
+  /////////////////////////////////////////////////////////////////////////
+  
+
+  // Build pressure system (all Neumann, excluding outflow)
+
+  //////////////////commented by Kevin Chen////////////////////////////////
+  /*
+  PoissonIPDG2D(m_gauss, m_cub, PRsystem, (*mm));
+  delete mm; mm=NULL;
+  */
+  /////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////added by Kevin Chen////////////////////////////
+  PoissonIPDG2D(PRsystem, (*mm));
+  delete mm; mm=NULL;
+  /////////////////////////////////////////////////////////////////////////
+
+
+#if (0)
+  // check against Matlab
+  FILE* fp = fopen("nnP.dat", "w");
+  PRsystem.write_ML(fp); fclose(fp);
+#endif
+
+  //-------------------------------------
+  // factor Pressure Op
+  //-------------------------------------
+  PRsystemC->chol(PRsystem, 4);   // 4=CS_Chol option
+
+  PRsystem.reset();               // force immediate deallocation
+  BCType = saveBCType;            // Restore original boundary types
+
+  //---------------------------
+  time_setup += timer.read() - t1;
+  //---------------------------
+}

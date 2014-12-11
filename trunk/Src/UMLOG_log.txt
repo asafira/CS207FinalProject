@@ -1,0 +1,13 @@
+
+--------------------------------
+              NuDG++            
+  Nodal Discontinuous Galerkin  
+     Method for non-linear      
+          PDE systems           
+                                
+   o  version 3.0.0             
+   o  June 6, 2007              
+   o  Dr Tim Warburton          
+   o  tim.warburton@gmail.com   
+--------------------------------
+

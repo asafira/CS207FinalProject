@@ -1,0 +1,15 @@
+
+ ==> {OP} assembly [bc]: 100, 200, 300, 
+ ==> {OP} assembly [bc]: 100, 200, 300, 
+ ==> {OPbc} to sparse
+ ==> {OPbc} ready.
+ ==> max_OP:        13464
+ ==> nnz_OP:          480
+
+ ==> {OP} assembly [bc]: 100, 200, 300, 
+ ==> {OP} assembly [bc]: 100, 200, 300, 
+ ==> {OPbc} to sparse
+ ==> {OPbc} ready.
+ ==> max_OP:        13464
+ ==> nnz_OP:          480
+2nd sparse setup completed
