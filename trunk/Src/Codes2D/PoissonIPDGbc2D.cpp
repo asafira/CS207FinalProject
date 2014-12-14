@@ -89,10 +89,10 @@ DVec& NDG2D::PoissonIPDGbc2D
 
         switch(BCType(k1,f1)){
 	  case BC_Dirichlet: 
-            bc(Np*k1+Range(1,Np)) += (gtau*mmE_Fm1 - trans(Dn1)*mmE_Fm1)*ubc(fidM);  
+            bc(Np*(k1-1)+Range(1,Np)) += (gtau*mmE_Fm1 - trans(Dn1)*mmE_Fm1)*ubc(fidM);  
             break;
           case BC_Neuman:
-            bc(Np*k1+Range(1,Np)) += mmE_Fm1*qbc(fidM);
+            bc(Np*(k1-1)+Range(1,Np)) += mmE_Fm1*qbc(fidM);
             break;
 	default:
 	  std::cout<<"warning: boundary condition is incorrect"<<std::endl;

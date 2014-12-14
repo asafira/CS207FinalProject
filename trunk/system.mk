@@ -8,7 +8,7 @@ MAKE = make
 
 # c++ compiler
 CXX = g++
-#CXX = clang++ -std=c++11
+#	CXX = clang++ -std=c++11
 
 # fortran compiler
 FC = gfortran

@@ -42,8 +42,7 @@ void OutputSampleNodes2D(int sample_N, DVec &R, DVec &S)
 void NDG2D::nodeDataOutput(const DMat& FData, int order, int zfield)
 //---------------------------------------------------------
 {
-  static int count = 0;
-  string output_dir = ".";
+  string output_dir = "./Solutions";
 
   // The caller loads each field of interest into FData, 
   // storing (Np*K) scalars per column.
@@ -54,7 +53,7 @@ void NDG2D::nodeDataOutput(const DMat& FData, int order, int zfield)
   // use N=3, we can export the solution fields with 
   // high-order, regularized elements (e.g. with N=12).
 
-  string buf = umOFORM("data.nodes", output_dir.c_str(), order, ++count);
+  string buf = umOFORM("%s/data.nodes", output_dir.c_str());
   FILE *fp = fopen(buf.c_str(), "w");
   if (!fp) {
     umLOG(1, "Could no open %s for output!\n", buf.c_str());
@@ -62,7 +61,9 @@ void NDG2D::nodeDataOutput(const DMat& FData, int order, int zfield)
   }
 
   // Set flags and totals
-  int Output_N = std::max(2, order);
+  //int Output_N = std::max(2, order);
+  
+  int Output_N = 1;
   int Ncells=0, Npts=0;
 
   Ncells = OutputSampleNelmt2D(Output_N);
@@ -114,7 +115,8 @@ void NDG2D::nodeDataOutput(const DMat& FData, int order, int zfield)
     }
   }
 
-
+  fprintf(fp, "\n");
+  fclose(fp);
 }
 
 
@@ -122,8 +124,7 @@ void NDG2D::nodeDataOutput(const DMat& FData, int order, int zfield)
 void NDG2D::triDataOutput(const DMat& FData, int order, int zfield)
 //---------------------------------------------------------
 {
-  static int count = 0;
-  string output_dir = ".";
+  string output_dir = "./Solutions";
 
   // The caller loads each field of interest into FData, 
   // storing (Np*K) scalars per column.
@@ -134,7 +135,7 @@ void NDG2D::triDataOutput(const DMat& FData, int order, int zfield)
   // use N=3, we can export the solution fields with 
   // high-order, regularized elements (e.g. with N=12).
 
-  string buf = umOFORM("data.tets", output_dir.c_str(), order, ++count);
+  string buf = umOFORM("%s/data.tets", output_dir.c_str());
   FILE *fp = fopen(buf.c_str(), "w");
   if (!fp) {
     umLOG(1, "Could no open %s for output!\n", buf.c_str());
@@ -142,7 +143,9 @@ void NDG2D::triDataOutput(const DMat& FData, int order, int zfield)
   }
 
   // Set flags and totals
-  int Output_N = std::max(2, order);
+  //int Output_N = std::max(2, order);
+
+  int Output_N = 1;
   int Ncells=0, Npts=0;
 
   Ncells = OutputSampleNelmt2D(Output_N);
@@ -156,13 +159,23 @@ void NDG2D::triDataOutput(const DMat& FData, int order, int zfield)
 
   int newNpts=0;
 
+
+
+  DMat newX, newY, newZ, newFData;
+
+  // Build new {X,Y,Z} vertices that regularize the 
+  // elements, then interpolate solution fields onto 
+  // this new set of elements:
+  OutputSampleXYZ(Output_N, newX, newY, newZ, FData, newFData, zfield);
+//double maxF1 = newFData.max_col_val_abs(1), scaleF=1.0;
+//if (maxF1 != 0.0) { scaleF = 1.0/maxF1; }
+
+  newNpts = newX.num_rows();
+
   //-------------------------------------
   // 3. Write the element connectivity
   //-------------------------------------
   IMat newELMT;
-
-  // Number of indices required to define connectivity
-  fprintf(fp, "\n\nCELLS %d %d", vtkTotalCells, vtkTotalConns);
 
   // build regularized tri elements at selected order
   OutputSampleELMT2D(Output_N, newELMT);
@@ -175,12 +188,16 @@ void NDG2D::triDataOutput(const DMat& FData, int order, int zfield)
   for (int k=0; k<this->K; ++k) {
     int nodesk = k*newNpts;
     for (int n=1; n<=newNTri; ++n) {
-      fprintf(fp, "\n%d", newNVert);
+      //fprintf(fp, "\n%d", newNVert);
+      fprintf(fp, "\n");
       for (int i=1; i<=newNVert; ++i) {
         fprintf(fp, " %5d", nodesk+newELMT(n, i));
       }
     }
   }
+
+  fprintf(fp, "\n");
+  fclose(fp);
 }
 
 //---------------------------------------------------------
@@ -188,7 +205,7 @@ void NDG2D::OutputVTK(const DMat& FData, int order, int zfield)
 //---------------------------------------------------------
 {
   static int count = 0;
-  string output_dir = ".";
+  string output_dir = "./Solutions";
 
   // The caller loads each field of interest into FData, 
   // storing (Np*K) scalars per column.
@@ -207,7 +224,9 @@ void NDG2D::OutputVTK(const DMat& FData, int order, int zfield)
   }
 
   // Set flags and totals
-  int Output_N = std::max(2, order);
+  //int Output_N = std::max(2, order);
+  int Output_N = 1;
+
   int Ncells=0, Npts=0;
 
   Ncells = OutputSampleNelmt2D(Output_N);
@@ -349,7 +368,7 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
 //---------------------------------------------------------
 {
   static int count = 0;
-  string output_dir = ".";
+  string output_dir = "./Solutions";
 
   // The caller loads each field of interest into FData, 
   // storing (Np*K) scalars per column.
@@ -368,7 +387,8 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
   }
 
   // Set flags and totals
-  int Output_N = std::max(2, order);
+  //int Output_N = std::max(2, order);
+  int Output_N = 1;
   int Ncells=0, Npts=0;
 
   Ncells = OutputSampleNelmt2D(Output_N);
@@ -407,14 +427,15 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
   // 5. Write the solution for the current timestep
   //-------------------------------------
 
-  fprintf(fp, "\n\nPOINT_DATA %d", vtkTotalPoints);
+  //fprintf(fp, "\n\nPOINT_DATA %d", vtkTotalPoints);
 
   // For each field, write POINT DATA for each point 
   // in the vtkUnstructuredGrid. 
 
   int NVals = FData.num_rows();
 
-
+  //DMat curls;
+  //Curl2D( curls);
 
   for (int n=1; n<=NVals; ++n)
   {

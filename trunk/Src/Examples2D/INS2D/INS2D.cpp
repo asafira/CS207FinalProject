@@ -340,10 +340,7 @@ void INS2D::Report(bool bForce)
     Q_plot.set_col(3, PR); // -exPR);
     Q_plot.set_col(4, vort);
 
-    OutputVTK(Q_plot, NvtkInterp);
-    nodeDataOutput(Q_plot, NvtkInterp);
-    triDataOutput(Q_plot, NvtkInterp);
-
+    OutputTxt(Q_plot, NvtkInterp);
   }
 }
 

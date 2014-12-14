@@ -29,7 +29,7 @@ void INS2D::Driver()
     FileName        = "Grid/CFD/Volker_374.neu";
     ExactSolution   = &INS2D::INScylinderIC2D;
     ExactSolutionBC = &INS2D::INScylinderBC2D;
-    FinalTime = 8.0;  nu = 1e-3;
+    FinalTime = 8.0;  nu = 1e-0;
     break;
 
   }
