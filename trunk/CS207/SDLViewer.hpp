@@ -49,6 +49,26 @@ struct DefaultColor {
   }
 };
 
+struct SimulationColor {
+  
+  double min_;
+  double max_;
+
+  SimulationColor(double min, double max) : max_(max), min_(min) {}
+
+  template <typename NODE>
+  Color operator()(const NODE& node) {
+    int contribs = node.value().num_contribs;
+    double val = node.value().sum;
+    double avg = val/((double) contribs);
+
+    //std::cout << "Color: " <<  (avg-min_)/(max_-min_) << std::endl;
+    //return Color((avg-min_)/(max_-min_));
+    return Color::make_heat((avg+20.0)/40.0);
+  }
+};
+
+
 // My color functor
 struct DazzlingColor {
   int max_ = 1;

@@ -399,7 +399,7 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
   int vtkTotalCells  = this->K * Ncells;
   int vtkTotalConns  = (this->EToV.num_cols()+1) * this->K * Ncells;
 
-
+/*
   //-------------------------------------
   // 1. Write the txt header details
   //-------------------------------------
@@ -408,7 +408,7 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
   fprintf(fp, "\nASCII");
   fprintf(fp, "\nDATASET UNSTRUCTURED_GRID\n");
   //fprintf(fp, "\nPOINTS %d double", vtkTotalPoints);
-
+*/
   int newNpts=0;
 
   //-------------------------------------

@@ -29,7 +29,7 @@ void INS2D::Driver()
     FileName        = "Grid/CFD/Volker_374.neu";
     ExactSolution   = &INS2D::INScylinderIC2D;
     ExactSolutionBC = &INS2D::INScylinderBC2D;
-    FinalTime = 8.0;  nu = 1e-0;
+    FinalTime = 40.0;  nu = 1e-0;
     break;
 
   }
@@ -42,7 +42,7 @@ void INS2D::Driver()
 //N = 12;
 
 //FinalTime = 1.0;
-  FinalTime = 8.0;
+  FinalTime = 40.0;
 //FinalTime = 0.005;
 
   // Read in Mesh: [vertices, elements, materials, BC's]

@@ -9,7 +9,6 @@
 #include "Mesh.hpp"
 
 
-typedef Mesh<double, double, double > MeshType;
 
 struct NodePosition {
 
@@ -18,6 +17,14 @@ struct NodePosition {
     return Point(n.position().x, n.position().y, n.position().z);
   }
 };
+
+struct node_info {
+
+  int num_contribs;
+  double sum;
+};
+
+typedef Mesh<node_info, double, double> MeshType;
 
 void populate_mesh(MeshType& mesh, std::vector<typename MeshType::node_type>& mesh_node, std::ifstream& nodes_file, std::ifstream& tris_file) {
 
@@ -32,9 +39,9 @@ void populate_mesh(MeshType& mesh, std::vector<typename MeshType::node_type>& me
   while(CS207::getline_parsed(tris_file, t)) {
     mesh.add_triangle(mesh_node[t[0]], mesh_node[t[1]], mesh_node[t[2]]);
   }
-  std::cout << "hi";
-
 }
+
+
 
 int main(int argc, char* argv[])
 {
@@ -101,6 +108,9 @@ int main(int argc, char* argv[])
   populate_mesh(mesh, mesh_node, nodes_file, tris_file);
 
 
+  for (auto node_it = mesh.node_begin(); node_it != mesh.node_end(); ++node_it)
+    (*node_it).value() = {0,0.0};
+
   CS207::SDLViewer viewer;
   viewer.launch();
   auto node_map = viewer.empty_node_map(mesh);
@@ -108,6 +118,59 @@ int main(int argc, char* argv[])
   viewer.add_edges(mesh.edge_begin(), mesh.edge_end(), node_map);
   viewer.center_view();
 
-  for (int i = sim_file_start; i < argc; i++) {}
+  double ux, uy, p, curl;
+  std::string curr_string;
+  std::size_t line_number;
+  double max = 0;
+  double min = 0;
+  for (int i = sim_file_start; i < argc; i++) {
+    std::ifstream sim(argv[i]);
+    int count = 0;
+    for (auto tri_it = mesh.triangle_begin(); tri_it != mesh.triangle_end(); ++tri_it) {
+      for (int node_num = 0; node_num < 3; node_num++) {
+        if (sim.eof()) {
+          std::cout << "got to end of file before iterating over all triangles" << std::endl;
+          break;
+        }
+        getline(sim, curr_string); 
+        sscanf(curr_string.c_str(), "%lf %lf %lf %lf", &ux, &uy, &p, &curl);
+        if (max < curl) {max = curl;}
+        if (min > curl) {min = curl;}
+
+        node_info current = (*tri_it).node(node_num).value();
+        (*tri_it).node(node_num).value() = {1+current.num_contribs, curl+current.sum};
+      }
+/* 
+      count++;
+      if (count == 10) {std::cout << ((*tri_it).node(0).value().sum/(*tri_it).node(0).value().num_contribs) << std::endl; }
+
+*/
+    }
+/*
+    if (i % 2 == 0 || i % 2 == 1) {
+*/
+      viewer.add_nodes(mesh.node_begin(), mesh.node_end(), CS207::SimulationColor(min, max), node_map);
+      viewer.add_edges(mesh.edge_begin(), mesh.edge_end(), node_map);
+      viewer.set_label(i);
+      viewer.center_view();
+  /*  }
+
+    else {
+
+      viewer.add_nodes(mesh.node_begin(), mesh.node_end(), CS207::DefaultColor(), node_map);
+      viewer.add_edges(mesh.edge_begin(), mesh.edge_end(), node_map);
+      viewer.set_label(i);
+      viewer.center_view();
+  
+    }
+*/
+    for (auto node_it = mesh.node_begin(); node_it != mesh.node_end(); ++node_it)
+      (*node_it).value() = {0,0.0};
+
+    max = 0; min = 0;
+
+    std::cout << "-----------------------------------------" << std::endl;
+    //CS207::sleep(.1);
+  }
 
 }
