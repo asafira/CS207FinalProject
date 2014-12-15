@@ -362,23 +362,17 @@ void NDG2D::OutputVTK(const DMat& FData, int order, int zfield)
   fclose(fp);
 }
 
-
+/* @ brief abbreviated version of vtk output with only results
+   @ return output results in .txt format with only simulation
+            results in file named sim_N01_(count).txt
+*/
 //---------------------------------------------------------
 void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
 //---------------------------------------------------------
 {
   static int count = 0;
   string output_dir = "./Solutions";
-
-  // The caller loads each field of interest into FData, 
-  // storing (Np*K) scalars per column.
-  //
-  // For high (or low) resolution output, the user can 
-  // specify an arbitrary order of interpolation for 
-  // exporting the fields.  Thus while a simulation may 
-  // use N=3, we can export the solution fields with 
-  // high-order, regularized elements (e.g. with N=12).
-
+  
   string buf = umOFORM("%s/sim_N%02d_%04d.txt", output_dir.c_str(), order, ++count);
   FILE *fp = fopen(buf.c_str(), "w");
   if (!fp) {
@@ -386,8 +380,6 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
     return;
   }
 
-  // Set flags and totals
-  //int Output_N = std::max(2, order);
   int Output_N = 1;
   int Ncells=0, Npts=0;
 
@@ -399,43 +391,13 @@ void NDG2D::OutputTxt(const DMat& FData, int order, int zfield)
   int vtkTotalCells  = this->K * Ncells;
   int vtkTotalConns  = (this->EToV.num_cols()+1) * this->K * Ncells;
 
-/*
-  //-------------------------------------
-  // 1. Write the txt header details
-  //-------------------------------------
-  fprintf(fp, "# txt DataFile");
-  fprintf(fp, "\nNuDG++ 2D simulation");
-  fprintf(fp, "\nASCII");
-  fprintf(fp, "\nDATASET UNSTRUCTURED_GRID\n");
-  //fprintf(fp, "\nPOINTS %d double", vtkTotalPoints);
-*/
   int newNpts=0;
 
-  //-------------------------------------
-  // 2. Write the vertex data
-  //-------------------------------------
 
   DMat newX, newY, newZ, newFData;
-
-  // Build new {X,Y,Z} vertices that regularize the 
-  // elements, then interpolate solution fields onto 
-  // this new set of elements:
   OutputSampleXYZ(Output_N, newX, newY, newZ, FData, newFData, zfield);
 
-
-  //-------------------------------------
-  // 5. Write the solution for the current timestep
-  //-------------------------------------
-
-  //fprintf(fp, "\n\nPOINT_DATA %d", vtkTotalPoints);
-
-  // For each field, write POINT DATA for each point 
-  // in the vtkUnstructuredGrid. 
-
   int NVals = FData.num_rows();
-
-  //DMat curls;
-  //Curl2D( curls);
 
   for (int n=1; n<=NVals; ++n)
   {

@@ -7,8 +7,8 @@ CD = cd
 MAKE = make
 
 # c++ compiler
-CXX = g++
-#CXX = clang++ -std=c++11
+#CXX = g++
+CXX = clang++ -std=c++11
 
 # fortran compiler
 FC = gfortran
@@ -16,8 +16,8 @@ FC = gfortran
 LD = g++
 
 # optimization flags passed to all compilers
-# OPTFLAGS = -O3 -DNDEBUG
-OPTFLAGS = -g -DDEBUG -D_DEBUG
+ OPTFLAGS = -O3 -DNDEBUG
+#OPTFLAGS = -g -DDEBUG -D_DEBUG
 #OPTFLAGS = -Wall 
 
 # c++ compiler options

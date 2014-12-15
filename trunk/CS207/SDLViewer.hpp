@@ -63,8 +63,8 @@ struct SimulationColor {
     double avg = val/((double) contribs);
 
     //std::cout << "Color: " <<  (avg-min_)/(max_-min_) << std::endl;
-    //return Color((avg-min_)/(max_-min_));
-    return Color::make_heat((avg+20.0)/40.0);
+    return Color::make_heat((avg-min_)/(max_-min_));
+    //return Color::make_heat((avg+20.0)/40.0);
   }
 };
 
