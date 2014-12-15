@@ -1,3 +1,2 @@
 Printing to stderr
 Printing to g_pStdErr
-Sending LOG output to console

@@ -219,12 +219,12 @@ int main(int argc, char* argv[])
         sscanf(curr_string.c_str(), "%lf %lf %lf %lf", &ux, &uy, &p, &curl);
 
         // Update max and min values
-        if (max < curl) {max = curl;}
-        if (min > curl) {min = curl;}
+        if (max < uy) {max = uy;}
+        if (min > uy) {min = uy;}
 
         // Update node in mesh
         node_type current = (*tri_it).node(node_num).value();
-        (*tri_it).node(node_num).value() = {++current.num_contribs, curl+current.sum};
+        (*tri_it).node(node_num).value() = {++current.num_contribs, uy+current.sum};
       }
     }
       

@@ -85,11 +85,16 @@ bool NDG2D::MeshReaderGambit2D(const string& fname)
   // resize arrays
   VX.resize(Nv);  VY.resize(Nv); VZ.resize(bCoord3D ? Nv : 0);
 
+  std::cout << bCoord3D << " " << bIs3D << " " << tri_in_3D << std::endl;
   // read node coords (order not assumed)
   for (i=1; i<=Nv; ++i) 
   {
     is >> id;   // read id before using it
-    is >> VX(id) >> VY(id); 
+    std::cout << i << " " << id << std::endl;
+    is >> VX(id);
+    std::cout << VX(id) << " ";
+    is  >> VY(id); 
+    std::cout << VY(id) << std::endl;
     if (bCoord3D) { is >> VZ(id); }
     is.getline(buf,BUFSIZ);
   }
